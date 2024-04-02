@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from extensions import socketio
 from lobby_manager import startGame
+import session_utils
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'  # Needed for session management and flash messages
@@ -10,8 +11,6 @@ from models import get_all_lobbies
 from lobby_manager import create, join, leave, notifyPlayers
 import models
 
-# global lobbies 
-# lobbies = get_all_lobbies()
 
 @app.route('/')
 def index():
@@ -80,6 +79,12 @@ def signup():
 @socketio.on('connect')
 def handle_connect(data):
     # Emit the current lobby status when a new client connects
+    player_id = session.get('user_id')
+
+    session_utils.update_player_session(player_id, request.sid)
+
+    print("\n player sessions: ",session_utils.player_sessions)
+
     socketio.emit('update_lobbies', {'lobbies': get_all_lobbies()})
 
 @socketio.on('create_lobby')
@@ -99,6 +104,24 @@ def handle_leave_lobby(data):
     leave(session.get('user_id'), data['lobbyId'])
     socketio.emit('update_lobbies', {'lobbies': get_all_lobbies()})
 
+@socketio.on('notify_lobby')
+def handle_notify_lobby(data):
+    lobby_id = data['lobbyId']
+    message = data['message']
+    # Ensure the lobby exists
+    if lobby_id in models.lobbies:
+        # Iterate over all players in the lobby
+        for player_id in models.lobbies[lobby_id]['players']:
+            session_id = session_utils.get_session_id_for_player(player_id)
+            if session_id:
+                # Emit a message to each player in the lobby
+                socketio.emit('lobby_notification', {'message': message}, room=session_id)
+
+@socketio.on('disconnect')
+def handle_disconnect():
+    # Remove the session from the mapping upon disconnect
+    player_id = session.get('user_id') 
+    session_utils.remove_player_session(player_id)
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)

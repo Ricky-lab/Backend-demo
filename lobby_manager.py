@@ -2,6 +2,7 @@
 
 import models
 from extensions import socketio
+import session_utils
 lobbies = models.lobbies
 
 # create
@@ -58,14 +59,14 @@ def notifyPlayers(lobbyId, message):
     """
     Notifies all players in a lobby using WebSocket.
     """
-    if lobbyId in lobbies:
-        # Retrieve all player IDs in the lobby
-        players = lobbies[lobbyId]['players']
+    from session_utils import get_session_id_for_player  # Ensure correct import path
+
+    if lobbyId in models.lobbies:
+        players = models.lobbies[lobbyId]['players']
         for playerId in players:
-            # TBD
-            # socketio.emit('notification', {'message': message}, to=player_session_id)
-            pass
-        # For demonstration, just broadcast to all connected clients
-        socketio.emit('notification', {'lobbyId': lobbyId, 'message': message})
+            session_id = get_session_id_for_player(playerId)
+            if session_id:
+                # Emit the notification only to this player's session
+                socketio.emit('lobby_notification', {'message': message, 'lobbyId': lobbyId}, room=session_id)
         return True
     return False

@@ -50,18 +50,18 @@
     <script>
         var socket = io.connect('http://' + document.domain + ':' + location.port);
         var currentUser = "{{ session['user_id'] }}";
-    
-        socket.on('connect', function() {
+
+        socket.on('connect', function () {
             socket.emit('request_lobbies_update');
         });
-    
+
         function createLobby() {
             var limit = document.getElementById('lobbyLimit').value;
             socket.emit('create_lobby', { limit: limit, holder_id: currentUser });
         }
-    
+
         // Attach event listener to the "lobbies" container for delegation
-        document.getElementById('lobbies').addEventListener('click', function(event) {
+        document.getElementById('lobbies').addEventListener('click', function (event) {
             var target = event.target;
             if (target.tagName === 'BUTTON') {
                 var lobbyId = target.getAttribute('data-lobby-id');
@@ -70,37 +70,44 @@
                 } else if (target.classList.contains('leave')) {
                     leaveLobby(lobbyId);
                 } else if (target.classList.contains('notify')) {
+                    var lobbyId = target.getAttribute('data-lobby-id');
                     notifyLobby(lobbyId);
                 }
             }
         });
-    
+
         function joinLobby(lobbyId) {
             socket.emit('join_lobby', { lobbyId: lobbyId, playerId: currentUser });
         }
-    
+
         function leaveLobby(lobbyId) {
             socket.emit('leave_lobby', { lobbyId: lobbyId, playerId: currentUser });
         }
-    
+
         function notifyLobby(lobbyId) {
             var message = prompt("Enter your message for the lobby:");
-            socket.emit('notify_players', { lobbyId: lobbyId, message: message });
+            socket.emit('notify_lobby', { lobbyId: lobbyId, message: message });
         }
-    
+
+        socket.on('lobby_notification', function (data) {
+            alert(`New message for lobby ${data.lobbyId}: ${data.message}`);
+            // Or, instead of alert, update the webpage dynamically to show the message
+        });
+
         socket.on('update_lobbies', function (data) {
             var lobbyContainer = document.getElementById('lobbies');
             lobbyContainer.innerHTML = '';
-    
+
             Object.keys(data.lobbies).forEach(function (lobbyId) {
                 var lobby = data.lobbies[lobbyId];
                 var currentSize = lobby.players.length;
                 var isFull = currentSize >= lobby.limit;
                 var isInLobby = lobby.players.includes(currentUser);
                 var actionButtonsHTML = isInLobby ?
-                    `<button class='leave' data-lobby-id='${lobbyId}'>Leave</button>` :
+                    `<button class='leave' data-lobby-id='${lobbyId}'>Leave</button>` +
+                    `<button class='notify' data-lobby-id='${lobbyId}'>Notify</button>` :
                     (!isFull ? `<button class='join' data-lobby-id='${lobbyId}'>Join</button>` : `<button disabled>Full</button>`);
-    
+
                 var lobbyDiv = document.createElement('div');
                 lobbyDiv.className = 'lobby';
                 lobbyDiv.innerHTML = `Lobby ID: ${lobbyId}, Seats: ${currentSize}/${lobby.limit} <div class="lobby-actions">${actionButtonsHTML}</div>`;
@@ -108,7 +115,7 @@
             });
         });
     </script>
-    
+
 
 </body>
 

@@ -12,7 +12,7 @@ Before you begin, ensure you have Python 3.x installed on your system. It's reco
 
 1. Clone the repository to your local machine (on your terminal):
 ```
-git clone
+git clone https://github.com/Ricky-lab/Funnect.git
 ```
 2. Navigate to the project directory:
 ```

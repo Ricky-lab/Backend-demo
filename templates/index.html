@@ -20,7 +20,7 @@
     <div id="lobbies"></div>
 
     <script>
-        var socket = io(); 
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
 
         function createLobby() {
             var playerId = document.getElementById('playerId').value;
@@ -32,10 +32,13 @@
         }
 
         socket.on('update_lobbies', function(data) {
-            var lobbies = data.lobbies;
-            $('#lobbies').empty();
-            lobbies.forEach(function(lobby) {
-                $('#lobbies').append('<div class="lobby">' + lobby.info + '</div>');
+            var lobbyContainer = document.getElementById('lobbies');
+            lobbyContainer.innerHTML = '';  // Clear existing lobbies
+
+            data.lobbies.forEach(function(lobby) {
+                var lobbyDiv = document.createElement('div');
+                lobbyDiv.innerHTML = `Lobby ID: ${lobby.id}, Holder: ${lobby.holder_name}, Limit: ${lobby.limit}`;
+                lobbyContainer.appendChild(lobbyDiv);
             });
         });
     </script>

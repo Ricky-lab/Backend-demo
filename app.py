@@ -64,5 +64,19 @@ def signup():
     return render_template('signup.html')
 
 
+@socketio.on('create_lobby')
+def handle_create_lobby(data):
+    playerId = data['playerId']
+    lobbyId = f"lobby_{len(lobby_manager.lobbies) + 1}"  # Generate a unique ID for the lobby
+    lobbyDetails = {
+        'holder_id': playerId,
+        'holder_name': models.users[playerId]['first_name'],  # Assuming the playerId is the email
+        'limit': 4
+    }
+    lobby_manager.lobbies[lobbyId] = lobbyDetails
+
+    # Now broadcast the update to all connected clients
+    socketio.emit('update_lobbies', {'lobbies': list(lobby_manager.lobbies.values())})
+
 if __name__ == '__main__':
     socketio.run(app, debug=True)

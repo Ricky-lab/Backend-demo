@@ -1,14 +1,17 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from extensions import socketio
-
+from lobby_manager import startGame
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'  # Needed for session management and flash messages
 socketio.init_app(app)
 
-import models
+from models import get_all_lobbies
 from lobby_manager import create, join, leave, notifyPlayers
+import models
 
+# global lobbies 
+# lobbies = get_all_lobbies()
 
 @app.route('/')
 def index():
@@ -17,12 +20,10 @@ def index():
 @app.route('/lobby')
 def lobby():
     if 'user_id' not in session:
-        # If the user is not logged in, redirect to login page
         flash('Please log in to view this page.', 'warning')
         return redirect(url_for('login'))
-    
-    # Fetch and pass the lobbies to the lobby template
-    return render_template('index.html', lobbies=models.lobbies)
+    lobbies = get_all_lobbies()
+    return render_template('index.html', lobbies=lobbies)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -30,8 +31,8 @@ def login():
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
-        print(email)
-        print(password)
+        # print(email)
+        # print(password)
 
         user = models.users.get(email)
         if user and user['password'] == password:
@@ -75,14 +76,28 @@ def signup():
     return render_template('signup.html')
 
 
+# Sending the 'update_lobbies' signals once connect
+@socketio.on('connect')
+def handle_connect(data):
+    # Emit the current lobby status when a new client connects
+    socketio.emit('update_lobbies', {'lobbies': get_all_lobbies()})
+
 @socketio.on('create_lobby')
 def handle_create_lobby(data):
-    playerId = data['playerId']
+    playerId = session.get('user_id')
     limit = data['limit']
-    lobbyDetails = {'holder_name': 'Placeholder Name', 'limit': limit}
-    create(playerId, lobbyDetails)
-    # Emit an update to all clients about the new lobby
-    # socketio.emit('update_lobbies', {'lobbies': models.lobbies.values()})
+    create(playerId, {'limit': limit, 'players': [playerId]})
+    socketio.emit('update_lobbies', {'lobbies': get_all_lobbies()}, broadcast=True)
+
+@socketio.on('join_lobby')
+def handle_join_lobby(data):
+    join(session.get('user_id'), data['lobbyId'])
+    socketio.emit('update_lobbies', {'lobbies': get_all_lobbies()}, broadcast=True)
+
+@socketio.on('leave_lobby')
+def handle_leave_lobby(data):
+    leave(session.get('user_id'), data['lobbyId'])
+    socketio.emit('update_lobbies', {'lobbies': get_all_lobbies()}, broadcast=True)
 
 
 if __name__ == '__main__':

@@ -26,6 +26,8 @@ def join(playerId, lobbyId):
     """
     if lobbyId in lobbies and len(lobbies[lobbyId]['players']) < lobbies[lobbyId]['limit']:
         lobbies[lobbyId]['players'].append(playerId)
+        # check if it is ready to start
+        startGame(lobbyId)
         return True
     return False
 

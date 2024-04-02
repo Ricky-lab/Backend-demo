@@ -67,6 +67,18 @@ python app.py
 - `session_utils.py` - Utility functions for managing user sessions.
 - `requirements.txt` - Contains all the necessary Python package dependencies.
 
+## For testing 🧪
+My testing way are really `brute force`: using three account to login at the same time and do the interactions among them.<br>
+Here are the accounts from the in-memory database, and remember to use `Email` and `Pw` to login:
+```
+Name: John Doe, Email: 1@e.com, Pw: 123
+Name: Jane Doe, Email: 2@e.com, Pw: 123
+Name: Alice Smith, Email: 3@e.com, Pw: 123
+...
+(For more accounts' info, you can have a look in models.py)
+```
+You absolutely can sign up new one for yourself, only if your email `has not been registered` previously. (Yes I implement this verification as well~)
+
 ## Further Improvements 🤔
 
 While Funnect provides a solid foundation for real-time online gaming and community engagement, several areas could enhance its functionality and user experience:

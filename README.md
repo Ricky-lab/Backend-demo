@@ -1,6 +1,7 @@
 # Funnect - Where Fun Meets Connection
-
-Funnect is an innovative platform that bridges the gap between fun and connection, allowing users to dive into the heart of gaming with ease. By offering seamless access to vibrant gaming communities and multiplayer experiences, Funnect aims to create unforgettable moments of joy and camaraderie in real-time.
+Hey here is developer Ricky 😃 <br><br>
+Funnect is an innovative platform that bridges the gap between fun and connection, using `Flask`. For the testing and reviewing convinience, I decide not to use any database (even in the lightweight one). Hence, I use the in-memory data structure to store the related data, which are well designed to join each other.<br> <br>
+Even this project would just blink for a while in my life but I won't think lowly of this. Each experience for me is so valuable. Hence, I am willing to assign all it deserves, including basical `login` and `signup` functions with basic UI. Hope you like my porject!
 
 ## Setup and Running 🧰
 

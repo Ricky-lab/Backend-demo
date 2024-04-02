@@ -12,7 +12,6 @@ def create(playerId, lobbyDetails):
     lobbyId = f"lobby_{len(lobbies) + 1}"  # Generate a unique lobby ID
     lobbies[lobbyId] = {
         'holder_id': playerId,
-        'holder_name': lobbyDetails['holder_name'],
         'limit': lobbyDetails['limit'],
         'players': [playerId]  # Initially, the lobby holder is the only player
     }

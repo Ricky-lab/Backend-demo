@@ -3,11 +3,11 @@
 
 # key: email, value: {'first_name': str, 'last_name': str, 'password': str, 'player_id': str}
 users = {}  
-users['user1@email.com'] = {'first_name': 'John', 'last_name': 'Doe', 'password': '123', 'player_id': 'p0001'}
-users['user2@email.com'] = {'first_name': 'Jane', 'last_name': 'Doe', 'password': '456', 'player_id': 'p0002'}
-users['user3@email.com'] = {'first_name': 'Alice', 'last_name': 'Smith', 'password': '789', 'player_id': 'p0003'}
-users['user4@email.com'] = {'first_name': 'Bob', 'last_name': 'Brown', 'password': '012', 'player_id': 'p0004'}
-users['r@r.com']         = {'first_name': 'R', 'last_name': 'R', 'password': '123', 'player_id': 'p0005'}
+users['1@e.com'] = {'first_name': 'John', 'last_name': 'Doe', 'password': '123', 'player_id': 'p0001'}
+users['2@e.com'] = {'first_name': 'Jane', 'last_name': 'Doe', 'password': '123', 'player_id': 'p0002'}
+users['3@e.com'] = {'first_name': 'Alice', 'last_name': 'Smith', 'password': '123', 'player_id': 'p0003'}
+users['4@e.com'] = {'first_name': 'Bob', 'last_name': 'Brown', 'password': '123', 'player_id': 'p0004'}
+users['r@e.com'] = {'first_name': 'R', 'last_name': 'R', 'password': '123', 'player_id': 'p0005'}
 
 
 # Update next_user_id accordingly

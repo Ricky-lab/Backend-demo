@@ -9,9 +9,7 @@ users['3@e.com'] = {'first_name': 'Alice', 'last_name': 'Smith', 'password': '12
 users['4@e.com'] = {'first_name': 'Bob', 'last_name': 'Brown', 'password': '123', 'player_id': 'p0004'}
 users['r@e.com'] = {'first_name': 'R', 'last_name': 'R', 'password': '123', 'player_id': 'p0005'}
 
-
-# Update next_user_id accordingly
-next_user_id = len(users) + 1
+next_user_id = len(users) + 1  #auto-incrementing user IDs
 
 
 # key: lobby_id, value: {'holder_name': str, 'holder_id': str, 'limit': int}
@@ -23,4 +21,3 @@ lobbies['lobby_3'] = {'holder_name': 'Alice Smith', 'holder_id': 'p0003', 'limit
 def get_all_lobbies():
     return lobbies
 
-next_user_id = len(users) + 1  #auto-incrementing user IDs

@@ -5,17 +5,24 @@ from extensions import socketio
 import session_utils
 lobbies = models.lobbies
 
+
+# For lobby_id auto-increment 
+global index
+index = len(lobbies)
+
 # create
 def create(playerId, lobbyDetails):
     """
     Creates a new game lobby with details provided by the lobby holder.
     """
-    lobbyId = f"lobby_{len(lobbies) + 1}"  # Generate a unique lobby ID
+    global index
+    lobbyId = f"lobby_{index + 1}"  # Generate a unique lobby ID
     lobbies[lobbyId] = {
         'holder_id': playerId,
         'limit': lobbyDetails['limit'],
         'players': [playerId]  # Initially, the lobby holder is the only player
     }
+    index += 1
     return lobbyId
 
 
@@ -24,7 +31,7 @@ def join(playerId, lobbyId):
     """
     Adds a player to the specified lobby if it's not full.
     """
-    if lobbyId in lobbies and len(lobbies[lobbyId]['players']) < lobbies[lobbyId]['limit']:
+    if lobbyId in lobbies and len(lobbies[lobbyId]['players']) < int(lobbies[lobbyId]['limit']):
         lobbies[lobbyId]['players'].append(playerId)
         # check if it is ready to start
         startGame(lobbyId)
@@ -49,7 +56,7 @@ def startGame(lobbyId):
     """
     Simulates starting a game by deleting the lobby. 
     """
-    if lobbyId in lobbies and len(lobbies[lobbyId]['players']) == lobbies[lobbyId]['limit']:
+    if lobbyId in lobbies and len(lobbies[lobbyId]['players']) == int(lobbies[lobbyId]['limit']):
         del lobbies[lobbyId]
         return True
     return False

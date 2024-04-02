@@ -87,17 +87,17 @@ def handle_create_lobby(data):
     playerId = session.get('user_id')
     limit = data['limit']
     create(playerId, {'limit': limit, 'players': [playerId]})
-    socketio.emit('update_lobbies', {'lobbies': get_all_lobbies()}, broadcast=True)
+    socketio.emit('update_lobbies', {'lobbies': get_all_lobbies()})
 
 @socketio.on('join_lobby')
 def handle_join_lobby(data):
     join(session.get('user_id'), data['lobbyId'])
-    socketio.emit('update_lobbies', {'lobbies': get_all_lobbies()}, broadcast=True)
+    socketio.emit('update_lobbies', {'lobbies': get_all_lobbies()})
 
 @socketio.on('leave_lobby')
 def handle_leave_lobby(data):
     leave(session.get('user_id'), data['lobbyId'])
-    socketio.emit('update_lobbies', {'lobbies': get_all_lobbies()}, broadcast=True)
+    socketio.emit('update_lobbies', {'lobbies': get_all_lobbies()})
 
 
 if __name__ == '__main__':

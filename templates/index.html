@@ -50,55 +50,65 @@
     <script>
         var socket = io.connect('http://' + document.domain + ':' + location.port);
         var currentUser = "{{ session['user_id'] }}";
-
+    
         socket.on('connect', function() {
-            // Request the latest lobby information as soon as the socket connects
             socket.emit('request_lobbies_update');
         });
-
+    
         function createLobby() {
             var limit = document.getElementById('lobbyLimit').value;
             socket.emit('create_lobby', { limit: limit, holder_id: currentUser });
         }
-
+    
+        // Attach event listener to the "lobbies" container for delegation
+        document.getElementById('lobbies').addEventListener('click', function(event) {
+            var target = event.target;
+            if (target.tagName === 'BUTTON') {
+                var lobbyId = target.getAttribute('data-lobby-id');
+                if (target.classList.contains('join')) {
+                    joinLobby(lobbyId);
+                } else if (target.classList.contains('leave')) {
+                    leaveLobby(lobbyId);
+                } else if (target.classList.contains('notify')) {
+                    notifyLobby(lobbyId);
+                }
+            }
+        });
+    
         function joinLobby(lobbyId) {
             socket.emit('join_lobby', { lobbyId: lobbyId, playerId: currentUser });
         }
-
+    
         function leaveLobby(lobbyId) {
             socket.emit('leave_lobby', { lobbyId: lobbyId, playerId: currentUser });
         }
-
-        function startGame(lobbyId) {
-            socket.emit('start_game', { lobbyId: lobbyId });
-        }
-
+    
         function notifyLobby(lobbyId) {
             var message = prompt("Enter your message for the lobby:");
             socket.emit('notify_players', { lobbyId: lobbyId, message: message });
         }
-
+    
         socket.on('update_lobbies', function (data) {
             var lobbyContainer = document.getElementById('lobbies');
             lobbyContainer.innerHTML = '';
-
+    
             Object.keys(data.lobbies).forEach(function (lobbyId) {
                 var lobby = data.lobbies[lobbyId];
                 var currentSize = lobby.players.length;
                 var isFull = currentSize >= lobby.limit;
                 var isInLobby = lobby.players.includes(currentUser);
-                var actionButton = isInLobby ?
-                    `<button onclick="leaveLobby('${lobbyId}')">Leave</button>` :
-                    (!isFull ? `<button onclick="joinLobby('${lobbyId}')">Join</button>` : `<button disabled>Full</button>`);
-                
+                var actionButtonsHTML = isInLobby ?
+                    `<button class='leave' data-lobby-id='${lobbyId}'>Leave</button>` :
+                    (!isFull ? `<button class='join' data-lobby-id='${lobbyId}'>Join</button>` : `<button disabled>Full</button>`);
+    
                 var lobbyDiv = document.createElement('div');
                 lobbyDiv.className = 'lobby';
-                lobbyDiv.innerHTML = `Lobby ID: ${lobbyId},          Seats: ${currentSize}/${lobby.limit} <div class="lobby-actions">${actionButton}</div>`;
+                lobbyDiv.innerHTML = `Lobby ID: ${lobbyId}, Seats: ${currentSize}/${lobby.limit} <div class="lobby-actions">${actionButtonsHTML}</div>`;
                 lobbyContainer.appendChild(lobbyDiv);
             });
         });
-
     </script>
+    
 
 </body>
 

@@ -15,8 +15,8 @@ next_user_id = len(users) + 1
 
 # key: lobby_id, value: {'holder_name': str, 'holder_id': str, 'limit': int}
 lobbies = {}  
-lobbies['lobby_1'] = {'holder_name': 'John Doe', 'holder_id': 'p0001', 'limit': 4}
-lobbies['lobby_2'] = {'holder_name': 'Jane Doe', 'holder_id': 'p0002', 'limit': 5}
+lobbies['lobby_1'] = {'holder_name': 'John Doe', 'holder_id': 'p0001', 'limit': 4, 'players': ['p0001', 'p0002'] }
+lobbies['lobby_2'] = {'holder_name': 'Jane Doe', 'holder_id': 'p0002', 'limit': 5, 'players': ['p0003', 'p0004']}
 lobbies['lobby_3'] = {'holder_name': 'Alice Smith', 'holder_id': 'p0003', 'limit': 3}
 
 

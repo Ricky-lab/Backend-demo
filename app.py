@@ -20,7 +20,7 @@ def lobby():
         return redirect(url_for('login'))
     
     # Fetch and pass the lobbies to the lobby template
-    return render_template('index.html', lobbies=lobby_manager.lobbies)
+    return render_template('index.html', lobbies=models.lobbies)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -33,7 +33,10 @@ def login():
 
         user = models.users.get(email)
         if user and user['password'] == password:
-            session['user_id'] = user['player_id']  # Log the user in
+            # Log the user in:
+            session['user_id'] = user['player_id']
+            session['first_name'] = user['first_name']
+            session['last_name'] = user['last_name']
             return redirect(url_for('lobby'))  # Redirect to lobby page
         else:
             flash('Invalid email or password', 'error')  # Flash an error message
@@ -83,7 +86,7 @@ def handle_create_lobby(data):
             'holder_name': user['first_name'],  # Now correctly using the email to get the user's details
             'limit': 4 #Default value
         }
-        lobby_manager.lobbies[lobbyId] = lobbyDetails
+        models.lobbies[lobbyId] = lobbyDetails
 
         # Broadcast the updated list of lobbies to all connected clients
         socketio.emit('update_lobbies', {'lobbies': list(lobby_manager.lobbies.values())})

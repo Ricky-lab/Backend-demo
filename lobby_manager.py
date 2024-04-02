@@ -1,9 +1,7 @@
 # For implementing the functions for managing lobbies and player interactions
 
-import app
-from flask_socketio import SocketIO
 import models
-socketio = SocketIO(app)
+from extensions import socketio
 lobbies = models.lobbies
 
 # create

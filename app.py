@@ -1,11 +1,13 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
-from flask_socketio import SocketIO
-import models
-import lobby_manager
+from extensions import socketio
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'  # Needed for session management and flash messages
-socketio = SocketIO(app)
+socketio.init_app(app)
+
+import models
+from lobby_manager import create, join, leave, notifyPlayers
 
 
 @app.route('/')
@@ -75,23 +77,12 @@ def signup():
 
 @socketio.on('create_lobby')
 def handle_create_lobby(data):
-    email = data['playerId']  # Assuming this is actually the user's email
-    user = models.users.get(email)
-
-    # Verify that the user exists before attempting to create a lobby
-    if user:
-        lobbyId = f"lobby_{len(lobby_manager.lobbies) + 1}"
-        lobbyDetails = {
-            'holder_id': user['player_id'],
-            'holder_name': user['first_name'],  # Now correctly using the email to get the user's details
-            'limit': 4 #Default value
-        }
-        models.lobbies[lobbyId] = lobbyDetails
-
-        # Broadcast the updated list of lobbies to all connected clients
-        socketio.emit('update_lobbies', {'lobbies': list(lobby_manager.lobbies.values())})
-    else:
-        print("User not found. Cannot create lobby.")  # Handle case where user is not found
+    playerId = data['playerId']
+    limit = data['limit']
+    lobbyDetails = {'holder_name': 'Placeholder Name', 'limit': limit}
+    create(playerId, lobbyDetails)
+    # Emit an update to all clients about the new lobby
+    # socketio.emit('update_lobbies', {'lobbies': models.lobbies.values()})
 
 
 if __name__ == '__main__':

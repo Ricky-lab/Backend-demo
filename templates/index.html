@@ -9,6 +9,8 @@
         body { font-family: Arial, sans-serif; margin: 20px; }
         #lobbies { margin-top: 20px; }
         .lobby { margin-bottom: 10px; padding: 10px; border: 1px solid #ddd; }
+        .lobby-actions { margin-top: 10px; }
+        button { margin-right: 5px; }
     </style>
 </head>
 <body>
@@ -17,12 +19,11 @@
     <h2>Create a Game Lobby</h2>
     <label for="lobbyLimit">Room limit:</label>
     <select id="lobbyLimit">
-        {% for i in range(1, 11) %}
+        {% for i in range(2, 11) %}
         <option value="{{ i }}">{{ i }}</option>
         {% endfor %}
     </select>
     <button onclick="createLobby()">Create Lobby</button>
-
 
     <h2>Available Lobbies</h2>
     <div id="lobbies"></div>
@@ -30,25 +31,58 @@
     <script>
         var socket = io.connect('http://' + document.domain + ':' + location.port);
 
+        var lobbiesData = {{ lobbies|tojson }};
+    
         function createLobby() {
-            var playerId = document.getElementById('playerId').value;
-            if(playerId) {
-                socket.emit('create_lobby', { playerId: playerId });
-            } else {
-                alert('Please enter a Player ID.');
+            var limit = document.getElementById('lobbyLimit').value;
+            var playerId = "{{ session['user_id'] }}";
+            socket.emit('create_lobby', { playerId: playerId, limit: parseInt(limit) });
+        }
+
+        function cancelLobby(lobbyId) {
+            socket.emit('cancel_lobby', { lobbyId: lobbyId });
+        }
+
+        function startGame(lobbyId) {
+            socket.emit('start_game', { lobbyId: lobbyId });
+        }
+
+        function notifyLobby(lobbyId) {
+            var message = prompt("Enter your message for the lobby:");
+            if (message) {
+                socket.emit('notify_players', { lobbyId: lobbyId, message: message });
             }
         }
 
         socket.on('update_lobbies', function(data) {
+            // Use the updated lobbies data from the server
+            updateLobbies(data.lobbies);
+        });
+
+        function updateLobbies(lobbies) {
             var lobbyContainer = document.getElementById('lobbies');
             lobbyContainer.innerHTML = '';  // Clear existing lobbies
-
-            data.lobbies.forEach(function(lobby) {
+            
+            Object.keys(lobbies).forEach(function(lobbyId) {
+                var lobby = lobbies[lobbyId];
+                var currentSize = lobby.players ? lobby.players.length : 0;  // Check if players field exists
                 var lobbyDiv = document.createElement('div');
-                lobbyDiv.innerHTML = `Lobby ID: ${lobby.id}, Holder: ${lobby.holder_name}, Limit: ${lobby.limit}`;
+                lobbyDiv.className = 'lobby';
+                lobbyDiv.innerHTML = `
+                    Lobby ID: ${lobbyId}, Holder: ${lobby.holder_name}, Seats: ${currentSize}/${lobby.limit}
+                    <div class="lobby-actions">
+                        ${"{{ session['user_id'] }}" === lobby.holder_id ?
+                        `<button onclick="startGame('${lobbyId}')">Start Game</button>
+                        <button onclick="cancelLobby('${lobbyId}')">Cancel</button>
+                        <button onclick="notifyLobby('${lobbyId}')">Notify</button>` : ""}
+                    </div>
+                `;
                 lobbyContainer.appendChild(lobbyDiv);
             });
-        });
+        }
+
+        // Initially populate lobbies on page load
+        updateLobbies(lobbiesData);
     </script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 # For implementing the functions for managing lobbies and player interactions
 
 # create
-def create(playerId, lobbDetails):
+def create(playerId, lobbyDetails):
     pass
 
 # Join

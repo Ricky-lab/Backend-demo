@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Game Lobby</title>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        #lobbies { margin-top: 20px; }
+        .lobby { margin-bottom: 10px; padding: 10px; border: 1px solid #ddd; }
+    </style>
+</head>
+<body>
+    <h2>Create a Game Lobby</h2>
+    <input type="text" id="playerId" placeholder="Your Player ID">
+    <button onclick="createLobby()">Create Lobby</button>
+
+    <h2>Available Lobbies</h2>
+    <div id="lobbies"></div>
+
+    <script>
+        var socket = io(); 
+
+        function createLobby() {
+            var playerId = document.getElementById('playerId').value;
+            if(playerId) {
+                socket.emit('create_lobby', { playerId: playerId });
+            } else {
+                alert('Please enter a Player ID.');
+            }
+        }
+
+        socket.on('update_lobbies', function(data) {
+            var lobbies = data.lobbies;
+            $('#lobbies').empty();
+            lobbies.forEach(function(lobby) {
+                $('#lobbies').append('<div class="lobby">' + lobby.info + '</div>');
+            });
+        });
+    </script>
+</body>
+</html>

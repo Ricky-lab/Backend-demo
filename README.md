@@ -96,6 +96,6 @@ While Funnect provides a solid foundation for real-time online gaming and commun
 
 I wanted to take a moment to share my genuine excitement and the sheer joy I experienced while working on this project. From conceptualizing the idea of Funnect, where fun meets connection, to tackling the technical challenges of bringing it to life, every step of the process and further ideas have been thoroughly engaging and immensely rewarding.
 
-As I submit this project for your review, I do so with the hope that it marks the beginning of a journey rather than a singular checkpoint. I am eagerly looking forward to the possibility of exploring further crossroads with your innovative team. Whether it be refining Funnect or embarking on new projects, I am excited about the potential to contribute to your vision and to make a positive impact together.
+As I submit this project for your review, I do so with the hope that it marks the beginning of a journey rather than a singular checkpoint. I am eagerly looking forward to the possibility of exploring further crossroads with your innovative team. Whether it be refining Funnect's functions or embarking on new projects, I am excited about the potential to contribute to your vision and to make a positive impact together.
 
 Thank you for considering my work and for the opportunity to engage in this exciting challenge. I am truly looking forward to any future interactions we might have and the chance to potentially join your dynamic team. -Yuehui 😸
